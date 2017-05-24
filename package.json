@@ -1,0 +1,12 @@
+{
+  "name": "dep-actor-js-npm-github-pr",
+  "version": "1.0.0",
+  "main": "entrypoint.js",
+  "repository": "https://github.com/dependencies-io/dep-actor-js-npm-github-pr",
+  "author": "js@dropseed.io",
+  "license": "MIT",
+  "dependencies": {
+    "request": "2.81.0",
+    "shelljs": "0.7.7"
+  }
+}

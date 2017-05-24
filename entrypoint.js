@@ -1,0 +1,64 @@
+const path = require('path')
+const shell = require('shelljs')
+const request = require('request')
+
+const REPO_PATH = '/repo'
+const TESTING = (process.env.DEPENDENCIES_ENV || 'production') == 'test'
+const GITHUB_REPO_FULL_NAME = process.env.GITHUB_REPO_FULL_NAME
+const GITHUB_API_TOKEN = process.env.GITHUB_API_TOKEN
+const baseBranch = process.env.SETTING_PR_BASE || 'master'
+const dependencies = JSON.parse(process.env.DEPENDENCIES)
+
+dependencies.forEach(function(dependency) {
+  console.log(dependency)
+
+  const name = dependency.name
+  const installed = dependency.installed.version
+  const dependencyPath = path.join(REPO_PATH, dependency.path)
+
+  const package_json = require(dependencyPath)
+  const isDevDependency = package_json.hasOwnProperty('devDependencies') && package_json.devDependencies.hasOwnProperty(name)
+
+  dependency.available.forEach(function(available) {
+
+    const version = available.version
+    const branchName = `${name}-${version}`
+    const msg = `Update ${name} from ${installed} to ${version}`
+    const prBody = `${name} has been updated to ${version} by dependencies.io`
+
+    shell.rm('-rf', 'node_modules')
+
+    shell.exec(`git checkout ${baseBranch}`)
+    // TODO also checkout commit from build?
+
+    shell.exec(`git checkout -b ${branchName}`)
+    shell.exec('npm install')
+
+    const installOpts = isDevDependency ? '--save-dev' : ''
+    shell.exec(`npm install ${name}@${version} --save --save-exact ${installOpts}`)
+
+    // TODO if shrinkwrap, then do that now too
+
+    shell.exec(`git add ${dependencyPath}`)
+    shell.exec(`git commit -m "${msg}"`)
+
+    if (!TESTING) {
+      shell.exec(`git push --set-upstream origin ${branchName}`)
+      const requestOptions = {
+        method: 'POST',
+        json: {
+          'title': msg,
+          'head': branchName,
+          'base': baseBranch,
+          'body': prBody,
+        },
+        url: `https://api.github.com/repos/${GITHUB_REPO_FULL_NAME}/pulls`,
+        headers: {
+          'User-Agent': 'dependencies.io dep-actor-js-npm-github-pr',
+          'Authorization': `token ${GITHUB_API_TOKEN}`
+        }
+      }
+      console.log(request(options))
+    }
+  })
+})
