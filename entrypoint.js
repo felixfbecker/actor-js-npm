@@ -15,9 +15,9 @@ dependencies.forEach(function(dependency) {
   const name = dependency.name
   const installed = dependency.installed.version
   const dependencyPath = path.join(REPO_PATH, dependency.path)
-
-  const package_json = require(dependencyPath)
-  const isDevDependency = package_json.hasOwnProperty('devDependencies') && package_json.devDependencies.hasOwnProperty(name)
+  const packageJsonPath = path.join(dependencyPath, 'package.json')
+  const packageJson = require(packageJsonPath)
+  const isDevDependency = packageJson.hasOwnProperty('devDependencies') && packageJson.devDependencies.hasOwnProperty(name)
 
   dependency.available.forEach(function(available) {
 
@@ -39,7 +39,7 @@ dependencies.forEach(function(dependency) {
 
     // TODO if shrinkwrap, then do that now too
 
-    shell.exec(`git add ${dependencyPath}`)
+    shell.exec(`git add ${packageJsonPath}`)
     shell.exec(`git commit -m "${msg}"`)
 
     if (!TESTING) {

@@ -5,7 +5,7 @@
         "available": [
             {"version": "15.5.4"}
         ],
-        "path": "package.json"
+        "path": "/"
     },
     {
         "name": "redux",
@@ -13,6 +13,6 @@
         "available": [
             {"version": "3.6.0"}
         ],
-        "path": "package.json"
+        "path": "/"
     }
 ]
