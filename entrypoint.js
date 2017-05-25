@@ -9,6 +9,8 @@ const GITHUB_API_TOKEN = process.env.GITHUB_API_TOKEN
 const baseBranch = process.env.SETTING_PR_BASE || 'master'
 const dependencies = JSON.parse(process.env.DEPENDENCIES)
 
+shell.set('-e')  // any failing shell commands will fail
+
 dependencies.forEach(function(dependency) {
   console.log(dependency)
 
@@ -32,12 +34,22 @@ dependencies.forEach(function(dependency) {
     // TODO also checkout commit from build?
 
     shell.exec(`git checkout -b ${branchName}`)
-    shell.exec('npm install')
 
-    const installOpts = isDevDependency ? '--save-dev' : ''
-    shell.exec(`npm install ${name}@${version} --save --save-exact ${installOpts}`)
+    const shrinkwrap = false
 
-    // TODO if shrinkwrap, then do that now too
+    if (shrinkwrap) {
+      // if shrinkwrap, then really have to install everything and run shrinkwrap?
+      shell.exec('npm install --quiet')
+
+      const installOpts = isDevDependency ? '--save-dev' : ''
+      shell.exec(`npm install ${name}@${version} --quiet --save --save-exact ${installOpts}`)
+    } else {
+      // if not shrinkwrap, can just update entry in package.json
+      // how to just write to file while preserving order? like npm does, but without
+      // actual download/install...
+      const installOpts = isDevDependency ? '--save-dev' : ''
+      shell.exec(`npm install ${name}@${version} --quiet --save --save-exact ${installOpts}`)
+    }
 
     shell.exec(`git add ${packageJsonPath}`)
     shell.exec(`git commit -m "${msg}"`)
@@ -58,7 +70,15 @@ dependencies.forEach(function(dependency) {
           'Authorization': `token ${GITHUB_API_TOKEN}`
         }
       }
-      console.log(request(options))
+      request(requestOptions, function(error, response, body) {
+        console.log(error)
+        console.log(response)
+        console.log(body)
+        // TODO delete the branch it created if failed?
+        throw "Failed to created pull request"
+      }).on('response', function(response) {
+        // console.log(response)
+      })
     }
   })
 })
