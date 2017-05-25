@@ -20,7 +20,7 @@ docker run \
     -e DEPENDENCIES="$(cat test/given_dependencies.json)" \
     -e SETTING_PR_BASE=${PR_BASE:-master} \
     -e DEPENDENCIES_ENV=${DEPENDENCIES_ENV:-test} \
-    -v $(pwd)/test/repo/:/repo/ \
+    -v ${REPO_PATH:-"$(pwd)/test/repo/"}:/repo/ \
     dep-actor-js-npm-github-pr
 
 # check that the modified file matches what we would expect
