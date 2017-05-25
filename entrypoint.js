@@ -70,13 +70,7 @@ dependencies.forEach(function(dependency) {
           'Authorization': `token ${GITHUB_API_TOKEN}`
         }
       }
-      request(requestOptions, function(error, response, body) {
-        console.log(error)
-        console.log(response)
-        console.log(body)
-        // TODO delete the branch it created if failed?
-        throw "Failed to created pull request"
-      }).on('response', function(response) {
+      request(requestOptions).on('response', function(response) {
         // console.log(response)
       })
     }
