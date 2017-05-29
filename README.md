@@ -3,9 +3,6 @@
 A [dependencies.io](https://dependencies.io) actor for updating `package.json` dependencies and creating a
 pull request on GitHub with those changes.
 
-## Settings
-- `PR_BASE` - branch that PR will be made against
-
 ## Development
 
 The default `test/run.sh` uses creates a dummy repo, and does not test the `git push` or GitHub
@@ -14,11 +11,6 @@ PR steps.
 Run with
 ```sh
 $ ./test/run.sh
-```
-
-Run with a specific [setting](#settings).
-```sh
-$ SETTING_PR_BASE=develop ./test/run.sh
 ```
 
 To run a live test against a GitHub repo and and create real branches/pulls:

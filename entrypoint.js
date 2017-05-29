@@ -6,7 +6,8 @@ const REPO_PATH = '/repo'
 const TESTING = (process.env.DEPENDENCIES_ENV || 'production') == 'test'
 const GITHUB_REPO_FULL_NAME = process.env.GITHUB_REPO_FULL_NAME
 const GITHUB_API_TOKEN = process.env.GITHUB_API_TOKEN
-const baseBranch = process.env.SETTING_PR_BASE || 'master'
+const PR_BASE = process.env.GIT_BRANCH
+const GIT_SHA = process.env.GIT_SHA
 const dependencies = JSON.parse(process.env.DEPENDENCIES)
 
 shell.set('-e')  // any failing shell commands will fail
@@ -30,8 +31,7 @@ dependencies.forEach(function(dependency) {
 
     shell.rm('-rf', 'node_modules')
 
-    shell.exec(`git checkout ${baseBranch}`)
-    // TODO also checkout commit from build?
+    shell.exec(`git checkout ${GIT_SHA}`)
 
     shell.exec(`git checkout -b ${branchName}`)
 
@@ -61,7 +61,7 @@ dependencies.forEach(function(dependency) {
         json: {
           'title': msg,
           'head': branchName,
-          'base': baseBranch,
+          'base': PR_BASE,
           'body': prBody,
         },
         url: `https://api.github.com/repos/${GITHUB_REPO_FULL_NAME}/pulls`,
