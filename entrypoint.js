@@ -75,4 +75,8 @@ dependencies.forEach(function(dependency) {
       })
     }
   })
+
+  dependencyJSON = JSON.stringify(dependency)
+  console.log(`BEGIN_DEPENDENCIES_SCHEMA_OUTPUT>${dependencyJSON}<END_DEPENDENCIES_SCHEMA_OUTPUT`)
+
 })
