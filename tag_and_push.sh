@@ -18,7 +18,7 @@ then
 fi
 
 git tag -a $VERSION -m "$VERSION"
-docker build -t dependencies/dep-actor-js-npm-github-pr:$VERSION .
-docker push dependencies/dep-actor-js-npm-github-pr:$VERSION
+docker build -t dependencies/actor-js-npm:$VERSION .
+docker push dependencies/actor-js-npm:$VERSION
 
 git push && git push --tags

@@ -66,7 +66,7 @@ dependencies.forEach(function(dependency) {
         },
         url: `https://api.github.com/repos/${GITHUB_REPO_FULL_NAME}/pulls`,
         headers: {
-          'User-Agent': 'dependencies.io dep-actor-js-npm-github-pr',
+          'User-Agent': 'dependencies.io actor-js-npm',
           'Authorization': `token ${GITHUB_API_TOKEN}`
         }
       }

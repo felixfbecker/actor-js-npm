@@ -1,4 +1,4 @@
-# dep-actor-js-npm-github-pr
+# actor-js-npm
 
 A [dependencies.io](https://dependencies.io) actor for updating `package.json` dependencies and creating a
 pull request on GitHub with those changes.

@@ -2,7 +2,7 @@
 set -e
 set -x
 
-docker build -t dep-actor-js-npm-github-pr .
+docker build -t actor-js-npm .
 
 # create a new git repo for testing
 rm -rf test/repo
@@ -21,7 +21,7 @@ docker run \
     -e SETTING_PR_BASE=${PR_BASE:-master} \
     -e DEPENDENCIES_ENV=${DEPENDENCIES_ENV:-test} \
     -v ${REPO_PATH:-"$(pwd)/test/repo/"}:/repo/ \
-    dep-actor-js-npm-github-pr
+    actor-js-npm
 
 # check that the modified file matches what we would expect
 cd test/repo
