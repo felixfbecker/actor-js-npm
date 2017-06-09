@@ -7,6 +7,7 @@ const TESTING = (process.env.DEPENDENCIES_ENV || 'production') == 'test'
 const GITHUB_REPO_FULL_NAME = process.env.GITHUB_REPO_FULL_NAME
 const GITHUB_API_TOKEN = process.env.GITHUB_API_TOKEN
 const PR_BASE = process.env.GIT_BRANCH
+const BUILD_NUMBER = process.env.BUILD_NUMBER
 const GIT_SHA = process.env.GIT_SHA
 const dependencies = JSON.parse(process.env.DEPENDENCIES)
 
@@ -25,7 +26,7 @@ dependencies.forEach(function(dependency) {
   dependency.available.forEach(function(available) {
 
     const version = available.version
-    const branchName = `${name}-${version}`
+    const branchName = `${name}-${version}-#${BUILD_NUMBER}`
     const msg = `Update ${name} from ${installed} to ${version}`
     const prBody = `${name} has been updated to ${version} by dependencies.io`
 
