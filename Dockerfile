@@ -1,4 +1,4 @@
-FROM node:7
+FROM node:8
 
 # add a non-root user and give them ownership
 RUN useradd -u 9000 app && \

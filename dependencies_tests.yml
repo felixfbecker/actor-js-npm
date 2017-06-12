@@ -1,0 +1,40 @@
+name: actor-js-npm
+type: actor
+
+cases:
+
+- name: package.json basic
+  dockerfile: Dockerfile
+  repo_contents: test/repo
+  dependencies_json: test/dependencies.json
+  tests:
+    - |
+        git checkout react-15.5.4-#0 && \
+        diff -x ".git*" -x "node_modules" ${CWD}/test/repo_react_final/ ./
+    - |
+        git checkout redux-3.6.0-#0 && \
+        diff -x ".git*" -x "node_modules" ${CWD}/test/repo_redux_final/ ./
+
+- name: package-lock.json
+  dockerfile: Dockerfile
+  repo_contents: test/repo_with_package_lock
+  dependencies_json: test/dependencies.json
+  tests:
+    - |
+        git checkout react-15.5.4-#0 && \
+        diff -x ".git*" -x "node_modules" ${CWD}/test/repo_with_package_lock_react_final/ ./
+    - |
+        git checkout redux-3.6.0-#0 && \
+        diff -x ".git*" -x "node_modules" ${CWD}/test/repo_with_package_lock_redux_final/ ./
+
+- name: yarn.lock
+  dockerfile: Dockerfile
+  repo_contents: test/repo_with_yarn
+  dependencies_json: test/dependencies.json
+  tests:
+    - |
+        git checkout react-15.5.4-#0 && \
+        diff -x ".git*" -x "node_modules" ${CWD}/test/repo_with_yarn_react_final/ ./
+    - |
+        git checkout redux-3.6.0-#0 && \
+        diff -x ".git*" -x "node_modules" ${CWD}/test/repo_with_yarn_redux_final/ ./

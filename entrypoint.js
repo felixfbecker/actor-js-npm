@@ -1,6 +1,7 @@
 const path = require('path')
 const shell = require('shelljs')
 const request = require('request')
+const fs = require('fs')
 
 const REPO_PATH = '/repo'
 const TESTING = (process.env.DEPENDENCIES_ENV || 'production') == 'test'
@@ -19,6 +20,13 @@ dependencies.forEach(function(dependency) {
   const name = dependency.name
   const installed = dependency.installed.version
   const dependencyPath = path.join(REPO_PATH, dependency.path)
+
+  const yarnLockPath = path.join(dependencyPath, 'yarn.lock')
+  const hasYarnLockFile = fs.existsSync(yarnLockPath)
+
+  const packageLockJsonPath = path.join(dependencyPath, 'package-lock.json')
+  const hasPackageLockFile = fs.existsSync(packageLockJsonPath)
+
   const packageJsonPath = path.join(dependencyPath, 'package.json')
   const packageJson = require(packageJsonPath)
   const isDevDependency = packageJson.hasOwnProperty('devDependencies') && packageJson.devDependencies.hasOwnProperty(name)
@@ -36,24 +44,28 @@ dependencies.forEach(function(dependency) {
 
     shell.exec(`git checkout -b ${branchName}`)
 
-    const shrinkwrap = false
-
-    if (shrinkwrap) {
-      // if shrinkwrap, then really have to install everything and run shrinkwrap?
+    if (hasYarnLockFile) {
+      shell.exec(`yarn upgrade ${name}@${version}`)
+      shell.exec(`git add ${packageJsonPath} ${yarnLockPath}`)
+    }
+    else if (hasPackageLockFile) {
       shell.exec('npm install --quiet')
-
-      const installOpts = isDevDependency ? '--save-dev' : ''
-      shell.exec(`npm install ${name}@${version} --quiet --save --save-exact ${installOpts}`)
+      shell.exec(`npm install ${name}@${version} --quiet`)
+      shell.exec(`git add ${packageJsonPath} ${packageLockJsonPath}`)
     } else {
-      // if not shrinkwrap, can just update entry in package.json
-      // how to just write to file while preserving order? like npm does, but without
-      // actual download/install...
       const installOpts = isDevDependency ? '--save-dev' : ''
+      shell.exec('npm install --quiet')
       shell.exec(`npm install ${name}@${version} --quiet --save --save-exact ${installOpts}`)
+      shell.exec(`rm ${packageLockJsonPath}`)
+      shell.exec(`git add ${packageJsonPath}`)
     }
 
-    shell.exec(`git add ${packageJsonPath}`)
     shell.exec(`git commit -m "${msg}"`)
+
+    // fail if there are other unchanged files
+    if (shell.exec('git status --porcelain').stdout.trim() != "") {
+        throw 'Git repo is dirty, there are changes that aren\'t accounted for\n' + shell.exec('git status').stdout
+    }
 
     if (!TESTING) {
       shell.exec(`git push --set-upstream origin ${branchName}`)
