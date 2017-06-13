@@ -4,10 +4,10 @@
   "private": true,
   "dependencies": {
     "react": "15.5.4",
-    "react-dom": "^15.5.3"
+    "react-dom": "15.5.3"
   },
   "devDependencies": {
-    "react-redux": "^5.0.4",
-    "redux": "^3.5.0"
+    "react-redux": "5.0.4",
+    "redux": "3.5.0"
   }
 }
