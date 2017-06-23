@@ -10,7 +10,7 @@ const GITHUB_API_TOKEN = process.env.GITHUB_API_TOKEN
 const PR_BASE = process.env.GIT_BRANCH
 const BUILD_NUMBER = process.env.BUILD_NUMBER
 const GIT_SHA = process.env.GIT_SHA
-const dependencies = JSON.parse(process.env.DEPENDENCIES)
+const dependencies = JSON.parse(process.env.DEPENDENCIES)['dependencies']
 
 shell.set('-e')  // any failing shell commands will fail
 
@@ -86,7 +86,7 @@ dependencies.forEach(function(dependency) {
     })
   }
 
-  dependencyJSON = JSON.stringify(dependency)
+  dependencyJSON = JSON.stringify({'dependencies': [dependency]})
   console.log(`BEGIN_DEPENDENCIES_SCHEMA_OUTPUT>${dependencyJSON}<END_DEPENDENCIES_SCHEMA_OUTPUT`)
 
 })
