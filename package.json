@@ -4,7 +4,7 @@
   "main": "entrypoint.js",
   "repository": "https://github.com/dependencies-io/actor-js-npm",
   "author": "js@dropseed.io",
-  "license": "MIT",
+  "license": "MPL 2.0",
   "dependencies": {
     "request": "2.81.0",
     "shelljs": "0.7.7"
