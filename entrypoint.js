@@ -34,7 +34,12 @@ dependencies.forEach(function(dependency) {
   const version = dependency.available[0].version
   const branchName = `${name}-${version}-#${BUILD_NUMBER}`
   const msg = `Update ${name} from ${installed} to ${version}`
-  const prBody = `${name} has been updated to ${version} by dependencies.io`
+
+  let prBody = `${name} has been updated to ${version} by dependencies.io`
+  dependency.available.forEach(function(available) {
+      const content = available.hasOwnProperty('content') ? available.content : '_No content found._'
+      prBody += `\n\n## ${available.version}\n\n${content}`
+  })
 
   shell.rm('-rf', 'node_modules')
 
