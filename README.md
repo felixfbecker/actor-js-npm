@@ -10,7 +10,7 @@ updates `package-lock.json` and `yarn.lock` files if present.
 
 ## Usage
 
-### .dependencies.yml
+### dependencies.yml
 
 ```yaml
 collectors:
