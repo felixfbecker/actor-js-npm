@@ -1,0 +1,30 @@
+{
+    "dependencies": [
+        {
+            "name": "react",
+            "installed": {
+                "version": "15.5.3"
+            },
+            "available": [
+                {
+                    "version": "15.5.4"
+                }
+            ],
+            "source": "npm",
+            "path": "sub"
+        },
+        {
+            "name": "redux",
+            "installed": {
+                "version": "3.5.0"
+            },
+            "available": [
+                {
+                    "version": "3.6.0"
+                }
+            ],
+            "source": "npm",
+            "path": "sub"
+        }
+    ]
+}

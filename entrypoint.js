@@ -40,25 +40,25 @@ dependencies.forEach(function(dependency) {
       prBody += `\n\n## ${available.version}\n\n${content}`
   })
 
-  shell.rm('-rf', 'node_modules')
+  shell.rm('-rf', path.join(dependencyPath, 'node_modules'))
 
   shell.exec(`git checkout ${GIT_SHA}`)
 
   shell.exec(`git checkout -b ${branchName}`)
 
   if (hasYarnLockFile) {
-    shell.exec(`yarn upgrade ${name}@${version}`)
+    shell.exec(`cd ${dependencyPath} && yarn upgrade ${name}@${version}`)
     shell.exec(`git add ${packageJsonPath} ${yarnLockPath}`)
   }
   else if (hasPackageLockFile) {
-    shell.exec('npm install --quiet')
-    shell.exec(`npm install ${name}@${version} --quiet`)
+    shell.exec(`cd ${dependencyPath} && npm install --quiet`)
+    shell.exec(`cd ${dependencyPath} && npm install ${name}@${version} --quiet`)
     shell.exec(`git add ${packageJsonPath} ${packageLockJsonPath}`)
   } else {
     const installOpts = isDevDependency ? '--save-dev' : ''
-    shell.exec('npm install --quiet')
-    shell.exec(`npm install ${name}@${version} --quiet --save --save-exact ${installOpts}`)
-    shell.exec(`rm ${packageLockJsonPath}`)
+    shell.exec(`cd ${dependencyPath} && npm install --quiet`)
+    shell.exec(`cd ${dependencyPath} && npm install ${name}@${version} --quiet --save --save-exact ${installOpts}`)
+    shell.exec(`cd ${dependencyPath} && rm ${packageLockJsonPath}`)
     shell.exec(`git add ${packageJsonPath}`)
   }
 
@@ -71,47 +71,47 @@ dependencies.forEach(function(dependency) {
 
   if (!TESTING) {
     shell.exec(`git push --set-upstream origin ${branchName}`)
+  }
 
-    if (GIT_HOST == 'github') {
-      const github_repo_full_name = process.env.GITHUB_REPO_FULL_NAME
-      const github_api_token = process.env.GITHUB_API_TOKEN
+  if (GIT_HOST == 'github') {
+    const github_repo_full_name = process.env.GITHUB_REPO_FULL_NAME
+    const github_api_token = process.env.GITHUB_API_TOKEN
 
-      const requestOptions = {
-        method: 'POST',
-        json: {
-          'title': msg,
-          'head': branchName,
-          'base': PR_BASE,
-          'body': prBody,
-        },
-        url: `https://api.github.com/repos/${github_repo_full_name}/pulls`,
-        headers: {
-          'User-Agent': 'dependencies.io actor-js-npm',
-          'Authorization': `token ${github_api_token}`
-        }
+    const requestOptions = {
+      method: 'POST',
+      json: {
+        'title': msg,
+        'head': branchName,
+        'base': PR_BASE,
+        'body': prBody,
+      },
+      url: `https://api.github.com/repos/${github_repo_full_name}/pulls`,
+      headers: {
+        'User-Agent': 'dependencies.io actor-js-npm',
+        'Authorization': `token ${github_api_token}`
       }
-      request(requestOptions).on('response', function(response) {
-        console.log(response)
-      })
-    } else if (GIT_HOST == 'gitlab') {
-      const gitlab_project_api_url = process.env.GITLAB_API_URL
-      const requestOptions = {
-        method: 'POST',
-        json: {
-          'title': msg,
-          'source_branch': branchName,
-          'target_branch': PR_BASE,
-          'description': prBody,
-        },
-        url: `${gitlab_project_api_url}/merge_requests`,
-        headers: {
-          'PRIVATE-TOKEN': process.env.GITLAB_API_TOKEN
-        }
-      }
-      request(requestOptions).on('response', function(response) {
-        console.log(response)
-      })
     }
+    request(requestOptions).on('response', function(response) {
+      console.log(response)
+    })
+  } else if (GIT_HOST == 'gitlab') {
+    const gitlab_project_api_url = process.env.GITLAB_API_URL
+    const requestOptions = {
+      method: 'POST',
+      json: {
+        'title': msg,
+        'source_branch': branchName,
+        'target_branch': PR_BASE,
+        'description': prBody,
+      },
+      url: `${gitlab_project_api_url}/merge_requests`,
+      headers: {
+        'PRIVATE-TOKEN': process.env.GITLAB_API_TOKEN
+      }
+    }
+    request(requestOptions).on('response', function(response) {
+      console.log(response)
+    })
   }
 
   dependencyJSON = JSON.stringify({'dependencies': [dependency]})
