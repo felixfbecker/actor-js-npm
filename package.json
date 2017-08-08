@@ -7,6 +7,7 @@
   "license": "MPL 2.0",
   "dependencies": {
     "request": "2.81.0",
+    "shell-quote": "1.6.1",
     "shelljs": "0.7.7"
   }
 }

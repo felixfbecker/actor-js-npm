@@ -1,5 +1,6 @@
 const path = require('path')
 const shell = require('shelljs')
+const shellQuote = require('shell-quote')
 const request = require('request')
 const fs = require('fs')
 
@@ -71,47 +72,7 @@ dependencies.forEach(function(dependency) {
 
   if (!TESTING) {
     shell.exec(`git push --set-upstream origin ${branchName}`)
-  }
-
-  if (GIT_HOST == 'github') {
-    const github_repo_full_name = process.env.GITHUB_REPO_FULL_NAME
-    const github_api_token = process.env.GITHUB_API_TOKEN
-
-    const requestOptions = {
-      method: 'POST',
-      json: {
-        'title': msg,
-        'head': branchName,
-        'base': PR_BASE,
-        'body': prBody,
-      },
-      url: `https://api.github.com/repos/${github_repo_full_name}/pulls`,
-      headers: {
-        'User-Agent': 'dependencies.io actor-js-npm',
-        'Authorization': `token ${github_api_token}`
-      }
-    }
-    request(requestOptions).on('response', function(response) {
-      console.log(response)
-    })
-  } else if (GIT_HOST == 'gitlab') {
-    const gitlab_project_api_url = process.env.GITLAB_API_URL
-    const requestOptions = {
-      method: 'POST',
-      json: {
-        'title': msg,
-        'source_branch': branchName,
-        'target_branch': PR_BASE,
-        'description': prBody,
-      },
-      url: `${gitlab_project_api_url}/merge_requests`,
-      headers: {
-        'PRIVATE-TOKEN': process.env.GITLAB_API_TOKEN
-      }
-    }
-    request(requestOptions).on('response', function(response) {
-      console.log(response)
-    })
+    shell.exec(shellQuote.quote(['pullrequest', '--branch', branchName, '--title', msg, '--body', prBody]))
   }
 
   dependencyJSON = JSON.stringify({'dependencies': [dependency]})
