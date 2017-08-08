@@ -18,6 +18,22 @@ collectors:
   actors:
   - type: js-npm
     versions: "L.Y.Y"
+    settings:
+      # github options
+      github_labels:  # list of label names
+      - bug
+      github_assignees:  # list of usernames
+      - davegaeddert
+      github_milestone: 3  # milestone number
+
+      # gitlab options
+      gitlab_assignee_id: 1  # assignee user ID
+      gitlab_labels:  # labels for MR as a list of strings
+      - dependencies
+      - update
+      gitlab_milestone_id: 1  # the ID of a milestone
+      gitlab_target_project_id: 1  # The target project (numeric id)
+      gitlab_remove_source_branch: true  # flag indicating if a merge request should remove the source branch when merging
 ```
 
 ### Works well with
