@@ -43,3 +43,20 @@ cases:
   dockerfile: Dockerfile
   repo_contents: test/repo_subdirectory
   dependencies_json: test/repo_subdirectory/dependencies.json
+
+- name: package.json basic with registry mirror
+  dockerfile: Dockerfile
+  repo_contents: test/repo
+  dependencies_json: test/dependencies.json
+  user_config:
+    settings:
+      npmrc: |
+        registry=https://skimdb.npmjs.com/registry
+        another=tes
+  tests:
+    - |
+        git checkout react-15.5.4-0.0.0 && \
+        diff -x ".git*" -x "node_modules" ${CWD}/test/repo_react_final/ ./
+    - |
+        git checkout redux-3.6.0-0.0.0 && \
+        diff -x ".git*" -x "node_modules" ${CWD}/test/repo_redux_final/ ./

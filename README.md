@@ -19,6 +19,10 @@ collectors:
   - type: js-npm
     versions: "L.Y.Y"
     settings:
+      # optional contents to put in ~/.npmrc
+      npmrc: |
+        registry=https://skimdb.npmjs.com/registry
+
       # github options
       github_labels:  # list of label names
       - bug

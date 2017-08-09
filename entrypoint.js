@@ -6,13 +6,18 @@ const fs = require('fs')
 
 const REPO_PATH = '/repo'
 const TESTING = (process.env.DEPENDENCIES_ENV || 'production') == 'test'
-const GIT_HOST = process.env.GIT_HOST
-const PR_BASE = process.env.GIT_BRANCH
 const ACTOR_ID = process.env.ACTOR_ID
 const GIT_SHA = process.env.GIT_SHA
+const NPMRC = process.env.SETTING_NPMRC
 const dependencies = JSON.parse(process.env.DEPENDENCIES)['dependencies']
 
 shell.set('-e')  // any failing shell commands will fail
+
+if (NPMRC) {
+    console.log('.npmrc contents found in settings, writing to /home/app/.npmrc...')
+    fs.writeFileSync('/home/app/.npmrc', NPMRC)
+    console.log(NPMRC)
+}
 
 dependencies.forEach(function(dependency) {
   console.log(dependency)
