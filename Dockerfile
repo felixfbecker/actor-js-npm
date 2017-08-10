@@ -18,7 +18,7 @@ RUN yarn install
 
 # add the pullrequest utility to easily create pull requests on different git hosts
 WORKDIR /usr/src/actor
-ENV PULLREQUEST_VERSION=0.2.1
+ENV PULLREQUEST_VERSION=0.3.0
 RUN wget https://github.com/dependencies-io/pullrequest/releases/download/${PULLREQUEST_VERSION}/pullrequest_${PULLREQUEST_VERSION}_linux_amd64.tar.gz && \
     mkdir pullrequest && \
     tar -zxvf pullrequest_${PULLREQUEST_VERSION}_linux_amd64.tar.gz -C pullrequest && \
