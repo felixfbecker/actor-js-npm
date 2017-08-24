@@ -46,10 +46,30 @@ dependencies.forEach(function(dependency) {
       prBody += `\n\n## ${available.version}\n\n${content}`
   })
 
-  shell.rm('-rf', path.join(dependencyPath, 'node_modules'))
+  const nodeModulesPath = path.join(dependencyPath, 'node_modules')
+  const tmpNodeModulesPath = path.join('/tmp', nodeModulesPath)
 
+  if (!fs.existsSync(tmpNodeModulesPath)) {
+    // install everything the first time, then keep a copy of those node_modules
+    // so we can copy them back in before we work on each branch
+    if (hasYarnLockFile) {
+      shell.exec(`cd ${dependencyPath} && yarn install --ignore-scripts`)
+    } else {
+      shell.exec(`cd ${dependencyPath} && npm install  --ignore-scripts --quiet`)
+    }
+
+    // save these in /tmp for future branches working on the same file
+    console.log(`Copying node_modules from ${nodeModulesPath} into ${tmpNodeModulesPath} for future use...`)
+    shell.mkdir('-p', tmpNodeModulesPath)
+    shell.cp('-R', nodeModulesPath, tmpNodeModulesPath)
+  } else {
+    // copy our cached node_modules in
+    console.log(`Copying node_modules from ${tmpNodeModulesPath} into ${nodeModulesPath}...`)
+    shell.cp('-R', tmpNodeModulesPath, nodeModulesPath)
+  }
+
+  // branch off of the original commit that this build is on
   shell.exec(`git checkout ${GIT_SHA}`)
-
   shell.exec(`git checkout -b ${branchName}`)
 
   if (hasYarnLockFile) {
@@ -68,6 +88,9 @@ dependencies.forEach(function(dependency) {
     shell.exec(`git add ${packageJsonPath}`)
   }
 
+  // remove node_modules
+  shell.rm('-rf', nodeModulesPath)
+
   shell.exec(`git commit -m "${msg}"`)
 
   // fail if there are other unchanged files
@@ -82,5 +105,4 @@ dependencies.forEach(function(dependency) {
 
   dependencyJSON = JSON.stringify({'dependencies': [dependency]})
   console.log(`BEGIN_DEPENDENCIES_SCHEMA_OUTPUT>${dependencyJSON}<END_DEPENDENCIES_SCHEMA_OUTPUT`)
-
 })
