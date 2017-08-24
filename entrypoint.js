@@ -53,17 +53,17 @@ dependencies.forEach(function(dependency) {
   shell.exec(`git checkout -b ${branchName}`)
 
   if (hasYarnLockFile) {
-    shell.exec(`cd ${dependencyPath} && yarn upgrade ${name}@${version}`)
+    shell.exec(`cd ${dependencyPath} && yarn upgrade ${name}@${version} --ignore-scripts`)
     shell.exec(`git add ${packageJsonPath} ${yarnLockPath}`)
   }
   else if (hasPackageLockFile) {
-    shell.exec(`cd ${dependencyPath} && npm install --quiet`)
-    shell.exec(`cd ${dependencyPath} && npm install ${name}@${version} --quiet`)
+    shell.exec(`cd ${dependencyPath} && npm install  --ignore-scripts --quiet`)
+    shell.exec(`cd ${dependencyPath} && npm install ${name}@${version}  --ignore-scripts --quiet`)
     shell.exec(`git add ${packageJsonPath} ${packageLockJsonPath}`)
   } else {
     const installOpts = isDevDependency ? '--save-dev' : ''
-    shell.exec(`cd ${dependencyPath} && npm install --quiet`)
-    shell.exec(`cd ${dependencyPath} && npm install ${name}@${version} --quiet --save --save-exact ${installOpts}`)
+    shell.exec(`cd ${dependencyPath} && npm install  --ignore-scripts --quiet`)
+    shell.exec(`cd ${dependencyPath} && npm install ${name}@${version}  --ignore-scripts --quiet --save --save-exact ${installOpts}`)
     shell.exec(`cd ${dependencyPath} && rm ${packageLockJsonPath}`)
     shell.exec(`git add ${packageJsonPath}`)
   }
