@@ -34,4 +34,4 @@ ADD entrypoint.js /usr/src/actor
 
 WORKDIR /repo
 
-ENTRYPOINT ["node", "/usr/src/actor/entrypoint.js"]
+ENTRYPOINT ["node", "--optimize_for_size", "--max_old_space_size=460", "/usr/src/actor/entrypoint.js"]
