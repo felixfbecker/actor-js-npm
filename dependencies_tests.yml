@@ -39,6 +39,19 @@ cases:
         git checkout redux-3.6.0-0.0.0 && \
         diff -x ".git*" -x "node_modules" ${CWD}/test/repo_with_yarn_redux_final/ ./
 
+- name: yarn.lock with caret and tilde
+  dockerfile: Dockerfile
+  repo_contents: test/repo_with_yarn_ranges
+  dependencies_json: test/dependencies.json
+  tests:
+    - |
+        git checkout react-15.5.4-0.0.0 && \
+        diff -x ".git*" -x "node_modules" ${CWD}/test/repo_with_yarn_ranges_react_final/ ./
+    - |
+        git checkout redux-3.6.0-0.0.0 && \
+        diff -x ".git*" -x "node_modules" ${CWD}/test/repo_with_yarn_ranges_redux_final/ ./
+
+
 - name: package.json subdirectory
   dockerfile: Dockerfile
   repo_contents: test/repo_subdirectory

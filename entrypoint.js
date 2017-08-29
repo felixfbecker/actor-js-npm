@@ -73,7 +73,23 @@ dependencies.forEach(function(dependency) {
   shell.exec(`git checkout -b ${branchName}`)
 
   if (hasYarnLockFile) {
-    shell.exec(`cd ${dependencyPath} && yarn upgrade ${name}@${version} --ignore-scripts`)
+    let packageJsonVersionSpecifier
+    if (isDevDependency) {
+      packageJsonVersionSpecifier = packageJson.devDependencies[name]
+    } else {
+      packageJsonVersionSpecifier = packageJson.dependencies[name]
+    }
+
+    let packageJsonVersionRangeSpecifier = ''
+    if (packageJsonVersionSpecifier.startsWith('^')) {
+      packageJsonVersionRangeSpecifier = '^'
+    } else if (packageJsonVersionSpecifier.startsWith('~')) {
+      packageJsonVersionRangeSpecifier = '~'
+    }
+
+    const versionWithRangeSpecifier = packageJsonVersionRangeSpecifier + version
+
+    shell.exec(`cd ${dependencyPath} && yarn upgrade ${name}@${versionWithRangeSpecifier} --ignore-scripts`)
     shell.exec(`git add ${packageJsonPath} ${yarnLockPath}`)
   }
   else if (hasPackageLockFile) {
