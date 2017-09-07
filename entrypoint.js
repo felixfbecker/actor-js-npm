@@ -1,7 +1,6 @@
 const path = require('path')
 const shell = require('shelljs')
 const shellQuote = require('shell-quote')
-const request = require('request')
 const fs = require('fs')
 
 const REPO_PATH = '/repo'

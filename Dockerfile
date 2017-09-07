@@ -16,6 +16,8 @@ ADD package.json /
 ADD yarn.lock /
 RUN yarn install
 
+ENV PATH="/usr/src/actor/node_modules/.bin:${PATH}"
+
 # add the pullrequest utility to easily create pull requests on different git hosts
 WORKDIR /usr/src/actor
 ENV PULLREQUEST_VERSION=0.3.0
