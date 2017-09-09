@@ -12,14 +12,15 @@ RUN useradd -u 9000 app && \
     mkdir /usr/src/actor && \
     chown -R app:app /usr/src/actor
 
-ADD package.json /
-ADD yarn.lock /
+WORKDIR /usr/src/actor
+
+ADD package.json /usr/src/actor
+ADD yarn.lock /usr/src/actor
 RUN yarn install
 
 ENV PATH="/usr/src/actor/node_modules/.bin:${PATH}"
 
 # add the pullrequest utility to easily create pull requests on different git hosts
-WORKDIR /usr/src/actor
 ENV PULLREQUEST_VERSION=0.3.0
 RUN wget https://github.com/dependencies-io/pullrequest/releases/download/${PULLREQUEST_VERSION}/pullrequest_${PULLREQUEST_VERSION}_linux_amd64.tar.gz && \
     mkdir pullrequest && \
