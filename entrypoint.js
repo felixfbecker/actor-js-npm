@@ -8,6 +8,7 @@ const TESTING = (process.env.DEPENDENCIES_ENV || 'production') == 'test'
 const ACTOR_ID = process.env.ACTOR_ID
 const GIT_SHA = process.env.GIT_SHA
 const NPMRC = process.env.SETTING_NPMRC
+const COMMIT_MESSAGE_PREFIX = process.env.SETTING_COMMIT_MESSAGE_PREFIX
 const dependencies = JSON.parse(process.env.DEPENDENCIES)['dependencies']
 
 shell.set('-e')  // any failing shell commands will fail
@@ -37,7 +38,7 @@ dependencies.forEach(function(dependency) {
 
   const version = dependency.available[0].version
   const branchName = `${name}-${version}-${ACTOR_ID}`
-  const msg = `Update ${name} from ${installed} to ${version}`
+  const msg = `${COMMIT_MESSAGE_PREFIX}Update ${name} from ${installed} to ${version}`
 
   let prBody = `${name} has been updated to ${version} by dependencies.io`
   dependency.available.forEach(function(available) {
