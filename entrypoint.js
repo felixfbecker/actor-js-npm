@@ -8,6 +8,7 @@ const TESTING = (process.env.DEPENDENCIES_ENV || 'production') == 'test'
 const ACTOR_ID = process.env.ACTOR_ID
 const GIT_SHA = process.env.GIT_SHA
 const NPMRC = process.env.SETTING_NPMRC
+const BATCH_MODE = JSON.parse(process.env.SETTING_BATCH_MODE || 'false')
 const COMMIT_MESSAGE_PREFIX = process.env.SETTING_COMMIT_MESSAGE_PREFIX
 const dependencies = JSON.parse(process.env.DEPENDENCIES)['dependencies']
 
@@ -17,6 +18,11 @@ if (NPMRC) {
     console.log('.npmrc contents found in settings, writing to /home/app/.npmrc...')
     fs.writeFileSync('/home/app/.npmrc', NPMRC)
     console.log(NPMRC)
+}
+
+const batchPrBranchName = `dependencies.io-update-build-${ACTOR_ID}`
+if (BATCH_MODE) {
+  shell.exec(`git checkout -b ${batchPrBranchName}`)
 }
 
 dependencies.forEach(function(dependency) {
@@ -68,9 +74,11 @@ dependencies.forEach(function(dependency) {
     shell.cp('-R', tmpNodeModulesPath, nodeModulesPath)
   }
 
-  // branch off of the original commit that this build is on
-  shell.exec(`git checkout ${GIT_SHA}`)
-  shell.exec(`git checkout -b ${branchName}`)
+  if (!BATCH_MODE) {
+    // branch off of the original commit that this build is on
+    shell.exec(`git checkout ${GIT_SHA}`)
+    shell.exec(`git checkout -b ${branchName}`)
+  }
 
   if (hasYarnLockFile) {
     let packageJsonVersionSpecifier
@@ -112,11 +120,13 @@ dependencies.forEach(function(dependency) {
       throw 'Git repo is dirty, there are changes that aren\'t accounted for\n' + shell.exec('git status').stdout
   }
 
-  if (!TESTING) {
-    shell.exec(`git push --set-upstream origin ${branchName}`)
-    shell.exec(shellQuote.quote(['pullrequest', '--branch', branchName, '--title', msg, '--body', prBody]))
+  if (!BATCH_MODE) {
+    if (!TESTING) {
+      shell.exec(`git push --set-upstream origin ${branchName}`)
+      shell.exec(shellQuote.quote(['pullrequest', '--branch', branchName, '--title', msg, '--body', prBody]))
+    }
+    dependencyJSON = JSON.stringify({'dependencies': [dependency]})
+    console.log(`BEGIN_DEPENDENCIES_SCHEMA_OUTPUT>${dependencyJSON}<END_DEPENDENCIES_SCHEMA_OUTPUT`)
   }
 
-  dependencyJSON = JSON.stringify({'dependencies': [dependency]})
-  console.log(`BEGIN_DEPENDENCIES_SCHEMA_OUTPUT>${dependencyJSON}<END_DEPENDENCIES_SCHEMA_OUTPUT`)
 })

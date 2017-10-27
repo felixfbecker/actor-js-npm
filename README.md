@@ -19,11 +19,16 @@ collectors:
   - type: js-npm
     versions: "L.Y.Y"
     settings:
+
       # optional contents to put in ~/.npmrc
       npmrc: |
         registry=https://skimdb.npmjs.com/registry
+
       # an optional prefix to add to all commit messages, be sure to add a space at the end if you want one
       commit_message_prefix: "chore: "
+
+      # false by default, set to true if you want all dependency updates in a single PR
+      batch_mode: false
 
       # github options
       github_labels:  # list of label names
