@@ -66,6 +66,7 @@ cases:
       npmrc: |
         registry=https://skimdb.npmjs.com/registry
         another=tes
+      commit_message_prefix: "deps: "
   tests:
     - |
         git checkout react-15.5.4-0.0.0 && \

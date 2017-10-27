@@ -22,6 +22,8 @@ collectors:
       # optional contents to put in ~/.npmrc
       npmrc: |
         registry=https://skimdb.npmjs.com/registry
+      # an optional prefix to add to all commit messages, be sure to add a space at the end if you want one
+      commit_message_prefix: "chore: "
 
       # github options
       github_labels:  # list of label names
