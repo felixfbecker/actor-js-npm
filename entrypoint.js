@@ -98,7 +98,7 @@ dependencies.forEach(function(dependency) {
   } else {
     const installOpts = isDevDependency ? '--save-dev' : ''
     shell.exec(`cd ${dependencyPath} && npm install ${name}@${version}  --ignore-scripts --quiet --save --save-exact ${installOpts}`)
-    shell.exec(`cd ${dependencyPath} && rm ${packageLockJsonPath}`)
+    shell.exec(`cd ${dependencyPath} && rm -f ${packageLockJsonPath}`)
     shell.exec(`git add ${packageJsonPath}`)
   }
 
